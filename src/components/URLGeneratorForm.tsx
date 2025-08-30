@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Loader2, Sparkles, Image, Video } from "lucide-react";
+import { Loader2, Sparkles, Image, Video, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface URLGeneratorFormProps {
@@ -87,26 +86,26 @@ export const URLGeneratorForm = ({ onContentGenerated }: URLGeneratorFormProps) 
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <Card className="p-8 bg-gradient-card shadow-card hover:shadow-card-hover transition-smooth border-0">
+    <div className="w-full max-w-md">
+      <Card className="p-8 bg-card/80 backdrop-blur-xl shadow-premium border border-border/50 rounded-3xl">
         <div className="space-y-8">
           <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-primary rounded-2xl shadow-button">
-              <Sparkles className="w-10 h-10 text-primary-foreground" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-accent rounded-2xl shadow-glow">
+              <Zap className="w-8 h-8 text-accent-foreground" />
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                AI Content Generator
-              </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Transform any URL into stunning visual content with AI
+              <h2 className="text-2xl font-bold text-foreground">
+                AI Generator
+              </h2>
+              <p className="text-muted-foreground">
+                Create stunning content instantly
               </p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-3">
-              <Label htmlFor="url" className="text-base font-semibold">
+              <Label htmlFor="url" className="text-sm font-semibold text-foreground">
                 Website URL
               </Label>
               <Input
@@ -114,39 +113,39 @@ export const URLGeneratorForm = ({ onContentGenerated }: URLGeneratorFormProps) 
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://example.com/your-content"
-                className="h-14 text-base bg-input/50 border-border/50 focus:bg-background transition-smooth rounded-xl"
+                placeholder="https://example.com"
+                className="h-12 bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input/80 transition-smooth rounded-xl text-foreground placeholder:text-muted-foreground"
                 disabled={isLoading}
               />
             </div>
 
             <div className="space-y-4">
-              <Label className="text-base font-semibold">Content Type</Label>
+              <Label className="text-sm font-semibold text-foreground">Content Type</Label>
               <RadioGroup 
                 value={contentType} 
                 onValueChange={setContentType}
-                className="grid grid-cols-2 gap-4"
+                className="grid grid-cols-2 gap-3"
                 disabled={isLoading}
               >
                 <div className="group">
-                  <div className="flex items-center space-x-3 p-6 rounded-xl border-2 border-border/50 hover:border-primary/50 transition-smooth cursor-pointer group-hover:bg-accent/10">
-                    <RadioGroupItem value="image" id="image" className="w-5 h-5" />
-                    <Label htmlFor="image" className="flex items-center gap-3 cursor-pointer text-base">
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg">
-                        <Image className="w-5 h-5 text-blue-600" />
+                  <div className="flex items-center space-x-3 p-4 rounded-xl border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-smooth cursor-pointer">
+                    <RadioGroupItem value="image" id="image" className="w-4 h-4" />
+                    <Label htmlFor="image" className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                      <div className="flex items-center justify-center w-8 h-8 bg-blue-500/20 rounded-lg">
+                        <Image className="w-4 h-4 text-blue-400" />
                       </div>
-                      <span className="font-medium">Image Content</span>
+                      <span className="text-foreground">Images</span>
                     </Label>
                   </div>
                 </div>
                 <div className="group">
-                  <div className="flex items-center space-x-3 p-6 rounded-xl border-2 border-border/50 hover:border-primary/50 transition-smooth cursor-pointer group-hover:bg-accent/10">
-                    <RadioGroupItem value="video" id="video" className="w-5 h-5" />
-                    <Label htmlFor="video" className="flex items-center gap-3 cursor-pointer text-base">
-                      <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-lg">
-                        <Video className="w-5 h-5 text-red-600" />
+                  <div className="flex items-center space-x-3 p-4 rounded-xl border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-smooth cursor-pointer">
+                    <RadioGroupItem value="video" id="video" className="w-4 h-4" />
+                    <Label htmlFor="video" className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                      <div className="flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-lg">
+                        <Video className="w-4 h-4 text-red-400" />
                       </div>
-                      <span className="font-medium">Video Content</span>
+                      <span className="text-foreground">Videos</span>
                     </Label>
                   </div>
                 </div>
@@ -155,20 +154,18 @@ export const URLGeneratorForm = ({ onContentGenerated }: URLGeneratorFormProps) 
 
             <Button
               type="submit"
-              variant="hero"
-              size="lg"
-              className="w-full h-16 text-lg font-semibold rounded-xl"
+              className="w-full h-14 bg-gradient-accent text-accent-foreground font-bold text-base rounded-xl shadow-glow hover:shadow-button transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                  Generating {contentType}...
+                  <Loader2 className="w-5 h-5 animate-spin mr-3" />
+                  Generating...
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-6 h-6" />
-                  Generate {contentType === "image" ? "Image" : "Video"}
+                  <Sparkles className="w-5 h-5 mr-3" />
+                  Generate Content
                 </>
               )}
             </Button>
