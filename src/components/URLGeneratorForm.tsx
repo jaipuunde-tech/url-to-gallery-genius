@@ -15,7 +15,7 @@ export const URLGeneratorForm = ({ onContentGenerated }: URLGeneratorFormProps) 
   const [url, setUrl] = useState("");
   const [contentType, setContentType] = useState("text");
   const [isLoading, setIsLoading] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState("https://n8n.srv936319.hstgr.cloud/webhook-test/b7382a9f-9548-4e13-9318-58b0fc2d4451");
   const { toast } = useToast();
 
   const validateUrl = (url: string) => {
