@@ -20,7 +20,7 @@ interface ContentGalleryProps {
 export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
   const [content, setContent] = useState<ContentItem[]>([]);
 
-  // Fetch media from Supabase storage bucket + add sample video
+  // Fetch media from Supabase storage bucket
   useEffect(() => {
     const fetchMedia = async () => {
       try {
@@ -50,24 +50,14 @@ export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
             return {
               id: file.id || file.name,
               name: file.name.split('.')[0], // Remove file extension for display
-              type: isVideo ? 'video' as const : isImage ? 'image' as const : 'image' as const,
+              type: isVideo ? 'video' as const : isImage ? 'image' as const : 'text' as const,
               url: publicUrl,
               thumbnailUrl: publicUrl, // For images, use the same URL. For videos, you might want to generate thumbnails
               createdAt: file.created_at || new Date().toISOString()
             };
           });
 
-        // Add the provided video link
-        const sampleVideo: ContentItem = {
-          id: 'featured-video',
-          name: 'AI Agent Demo',
-          type: 'video',
-          url: 'https://tempfile.aiquickdraw.com/l/e5898c52-556b-4642-a098-1ebc6bdd6b53.mp4',
-          thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&auto=format',
-          createdAt: new Date().toISOString()
-        };
-
-        setContent([sampleVideo, ...mediaItems]);
+        setContent(mediaItems);
       } catch (error) {
         console.error('Error fetching media:', error);
       }
@@ -90,11 +80,11 @@ export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
   const getItemColor = (type: string) => {
     switch (type) {
       case "video":
-        return "bg-primary/20 text-primary border-primary/30";
+        return "bg-red-500/20 text-red-400 border-red-500/30";
       case "image":
-        return "bg-secondary text-secondary-foreground border-border";
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
       default:
-        return "bg-accent/20 text-accent border-accent/30";
+        return "bg-green-500/20 text-green-400 border-green-500/30";
     }
   };
 
@@ -103,77 +93,65 @@ export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
       {/* Gallery Header */}
       <div className="text-center space-y-6">
         <div className="space-y-4">
-          <h2 className="text-4xl md:text-5xl font-black text-foreground">
-            <span className="block">CREATIVE</span>
-            <span className="block bg-gradient-primary bg-clip-text text-transparent">GALLERY</span>
+          <h2 className="text-5xl md:text-6xl font-black">
+            <span className="block text-foreground">CREATIVE</span>
+            <span className="block bg-gradient-accent bg-clip-text text-transparent">GALLERY</span>
           </h2>
-          <p className="text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed">
-            Explore AI-generated masterpieces and demos
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Explore AI-generated masterpieces from creators worldwide
           </p>
         </div>
-        <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-primary/20 shadow-card">
-          <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+        <div className="inline-flex items-center gap-3 px-6 py-3 bg-card/50 backdrop-blur-sm rounded-full border border-border/30">
+          <span className="text-2xl font-bold bg-gradient-accent bg-clip-text text-transparent">
             {content.length}
           </span>
-          <span className="text-foreground/70 font-medium">Creative Works</span>
+          <span className="text-muted-foreground font-medium">Creative Works</span>
         </div>
       </div>
 
       {/* Gallery Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {content.map((item) => (
           <Card 
             key={item.id} 
-            className="group overflow-hidden bg-white/90 backdrop-blur-sm shadow-card hover:shadow-premium border border-primary/10 hover:border-primary/30 transition-all duration-500 cursor-pointer transform hover:scale-105 rounded-2xl"
+            className="group overflow-hidden bg-card/50 backdrop-blur-sm shadow-card hover:shadow-premium border border-border/30 hover:border-primary/30 transition-all duration-500 cursor-pointer transform hover:scale-105 rounded-2xl"
           >
             {/* Thumbnail */}
             <div className="relative aspect-[4/3] bg-muted/10 overflow-hidden">
               {item.thumbnailUrl ? (
-                item.type === 'video' ? (
-                  <video 
-                    src={item.url}
-                    poster={item.thumbnailUrl}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
-                    muted
-                    loop
-                    onMouseEnter={(e) => e.currentTarget.play()}
-                    onMouseLeave={(e) => e.currentTarget.pause()}
-                  />
-                ) : (
-                  <img 
-                    src={item.thumbnailUrl} 
-                    alt={item.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
-                  />
-                )
+                <img 
+                  src={item.thumbnailUrl} 
+                  alt={item.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
+                />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-primary">
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted/20 to-muted/40">
                   {getItemIcon(item.type)}
                 </div>
               )}
               
               {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
               
               {/* Type Badge */}
-              <div className="absolute top-3 left-3">
+              <div className="absolute top-4 left-4">
                 <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border backdrop-blur-sm ${getItemColor(item.type)}`}>
                   {getItemIcon(item.type)}
-                  {item.type === "image" ? "IMAGE" : item.type === "video" ? "VIDEO" : "DEMO"}
+                  {item.type === "image" ? "IMAGE" : item.type === "video" ? "VIDEO" : "TEXT"}
                 </span>
               </div>
 
               {/* Play Button for Videos */}
               {item.type === "video" && (
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                  <div className="w-16 h-16 bg-primary/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-glow border-2 border-white/30">
-                    <Play className="w-6 h-6 text-white ml-1" />
+                  <div className="w-20 h-20 bg-primary/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-glow border-2 border-primary/30">
+                    <Play className="w-8 h-8 text-primary-foreground ml-1" />
                   </div>
                 </div>
               )}
 
               {/* External Link Icon */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500">
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
                 <div className="w-8 h-8 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
                   <ExternalLink className="w-4 h-4 text-white" />
                 </div>
@@ -181,11 +159,11 @@ export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
             </div>
 
             {/* Content Info */}
-            <div className="p-5 space-y-3 bg-white">
+            <div className="p-6 space-y-3">
               <h3 className="font-bold text-lg line-clamp-2 group-hover:text-primary transition-smooth text-foreground">
                 {item.name}
               </h3>
-              <p className="text-sm text-foreground/60 font-medium">
+              <p className="text-sm text-muted-foreground font-medium">
                 {new Date(item.createdAt).toLocaleDateString('en-US', { 
                   month: 'short', 
                   day: 'numeric', 
