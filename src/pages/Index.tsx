@@ -91,6 +91,13 @@ export default function Index() {
         </div>
       </div>
 
+      {/* Content Generator */}
+      <div className="container mx-auto px-6 py-8">
+        <div className="flex justify-center">
+          <URLGeneratorForm onContentGenerated={handleContentGenerated} />
+        </div>
+      </div>
+
       {/* Content Gallery */}
       <div className="container mx-auto px-6 py-16">
         <ContentGallery refreshTrigger={refreshTrigger} />

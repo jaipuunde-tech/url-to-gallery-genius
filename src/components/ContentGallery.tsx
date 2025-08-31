@@ -57,12 +57,12 @@ export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
             };
           });
 
-        // Add the sample video from public folder
+        // Add the provided video link
         const sampleVideo: ContentItem = {
-          id: 'sample-video',
+          id: 'featured-video',
           name: 'AI Agent Demo',
           type: 'video',
-          url: '/sample-video.mp4',
+          url: 'https://tempfile.aiquickdraw.com/l/e5898c52-556b-4642-a098-1ebc6bdd6b53.mp4',
           thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&auto=format',
           createdAt: new Date().toISOString()
         };
@@ -92,9 +92,9 @@ export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
       case "video":
         return "bg-primary/20 text-primary border-primary/30";
       case "image":
-        return "bg-blue-500/20 text-blue-600 border-blue-500/30";
+        return "bg-secondary text-secondary-foreground border-border";
       default:
-        return "bg-green-500/20 text-green-600 border-green-500/30";
+        return "bg-accent/20 text-accent border-accent/30";
     }
   };
 
