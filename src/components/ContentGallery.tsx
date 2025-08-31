@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { FileText, Video, Image, Play, ExternalLink } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ContentItem {
   id: string;
@@ -19,75 +20,50 @@ interface ContentGalleryProps {
 export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
   const [content, setContent] = useState<ContentItem[]>([]);
 
-  // Enhanced sample data showcasing diverse creative content
+  // Fetch media from Supabase storage bucket
   useEffect(() => {
-    const sampleContent: ContentItem[] = [
-      {
-        id: "1",
-        name: "AI Abstract Landscape",
-        type: "image",
-        url: "#",
-        thumbnailUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop&auto=format",
-        createdAt: "2024-01-20"
-      },
-      {
-        id: "2", 
-        name: "Motion Graphics Demo",
-        type: "video",
-        url: "#",
-        thumbnailUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&auto=format",
-        createdAt: "2024-01-19"
-      },
-      {
-        id: "3",
-        name: "Digital Art Creation",
-        type: "image", 
-        url: "#",
-        thumbnailUrl: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&h=400&fit=crop&auto=format",
-        createdAt: "2024-01-18"
-      },
-      {
-        id: "4",
-        name: "Creative Process Video",
-        type: "video",
-        url: "#",
-        thumbnailUrl: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=400&fit=crop&auto=format",
-        createdAt: "2024-01-17"
-      },
-      {
-        id: "5",
-        name: "Brand Visual Identity",
-        type: "image",
-        url: "#",
-        thumbnailUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop&auto=format",
-        createdAt: "2024-01-16"
-      },
-      {
-        id: "6",
-        name: "Animation Showcase",
-        type: "video",
-        url: "#",
-        thumbnailUrl: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=600&h=400&fit=crop&auto=format",
-        createdAt: "2024-01-15"
-      },
-      {
-        id: "7",
-        name: "Futuristic Design",
-        type: "image",
-        url: "#",
-        thumbnailUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=600&h=400&fit=crop&auto=format",
-        createdAt: "2024-01-14"
-      },
-      {
-        id: "8",
-        name: "Tech Visualization",
-        type: "video",
-        url: "#",
-        thumbnailUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop&auto=format",
-        createdAt: "2024-01-13"
+    const fetchMedia = async () => {
+      try {
+        const { data: files, error } = await supabase.storage
+          .from('media')
+          .list('', {
+            limit: 100,
+            sortBy: { column: 'created_at', order: 'desc' }
+          });
+
+        if (error) {
+          console.error('Error fetching media:', error);
+          return;
+        }
+
+        const mediaItems: ContentItem[] = files
+          .filter(file => file.name !== '.emptyFolderPlaceholder') // Filter out placeholder files
+          .map(file => {
+            const fileExtension = file.name.split('.').pop()?.toLowerCase();
+            const isVideo = ['mp4', 'mov', 'avi', 'webm', 'mkv'].includes(fileExtension || '');
+            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(fileExtension || '');
+            
+            const { data: { publicUrl } } = supabase.storage
+              .from('media')
+              .getPublicUrl(file.name);
+
+            return {
+              id: file.id || file.name,
+              name: file.name.split('.')[0], // Remove file extension for display
+              type: isVideo ? 'video' as const : isImage ? 'image' as const : 'text' as const,
+              url: publicUrl,
+              thumbnailUrl: publicUrl, // For images, use the same URL. For videos, you might want to generate thumbnails
+              createdAt: file.created_at || new Date().toISOString()
+            };
+          });
+
+        setContent(mediaItems);
+      } catch (error) {
+        console.error('Error fetching media:', error);
       }
-    ];
-    setContent(sampleContent);
+    };
+
+    fetchMedia();
   }, [refreshTrigger]);
 
   const getItemIcon = (type: string) => {
