@@ -15,7 +15,7 @@ export const URLGeneratorForm = ({ onContentGenerated }: URLGeneratorFormProps) 
   const [url, setUrl] = useState("");
   const [contentType, setContentType] = useState("image");
   const [isLoading, setIsLoading] = useState(false);
-  const webhookUrl = "https://n8n.srv936319.hstgr.cloud/webhook-test/b7382a9f-9548-4e13-9318-58b0fc2d4451";
+  const webhookUrl = "https://n8n.srv936319.hstgr.cloud/webhook-test/df9065fd-baab-43bb-9b05-5bcbf7fe1ec9";
   const { toast } = useToast();
 
   const validateUrl = (url: string) => {
@@ -87,25 +87,25 @@ export const URLGeneratorForm = ({ onContentGenerated }: URLGeneratorFormProps) 
 
   return (
     <div className="w-full max-w-md">
-      <Card className="p-8 bg-card/80 backdrop-blur-xl shadow-premium border border-border/50 rounded-3xl">
-        <div className="space-y-8">
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-accent rounded-2xl shadow-glow">
-              <Zap className="w-8 h-8 text-accent-foreground" />
+      <Card className="p-6 bg-card shadow-premium border border-border rounded-lg">
+        <div className="space-y-6">
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg">
+              <Zap className="w-6 h-6 text-primary" />
             </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-foreground">
-                AI Generator
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold text-foreground">
+                AI Content Generator
               </h2>
-              <p className="text-muted-foreground">
-                Create stunning content instantly
+              <p className="text-sm text-muted-foreground">
+                Transform URLs into visual content
               </p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="url" className="text-sm font-semibold text-foreground">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="url" className="text-sm font-medium text-foreground">
                 Website URL
               </Label>
               <Input
@@ -114,36 +114,36 @@ export const URLGeneratorForm = ({ onContentGenerated }: URLGeneratorFormProps) 
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com"
-                className="h-12 bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input/80 transition-smooth rounded-xl text-foreground placeholder:text-muted-foreground"
+                className="h-10 bg-background border-border focus:border-primary focus:ring-1 focus:ring-primary transition-smooth rounded-md text-foreground placeholder:text-muted-foreground"
                 disabled={isLoading}
               />
             </div>
 
-            <div className="space-y-4">
-              <Label className="text-sm font-semibold text-foreground">Content Type</Label>
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-foreground">Content Type</Label>
               <RadioGroup 
                 value={contentType} 
                 onValueChange={setContentType}
-                className="grid grid-cols-2 gap-3"
+                className="grid grid-cols-2 gap-2"
                 disabled={isLoading}
               >
                 <div className="group">
-                  <div className="flex items-center space-x-3 p-4 rounded-xl border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-smooth cursor-pointer">
+                  <div className="flex items-center space-x-2 p-3 rounded-md border border-border hover:border-primary/50 hover:bg-primary/5 transition-smooth cursor-pointer">
                     <RadioGroupItem value="image" id="image" className="w-4 h-4" />
                     <Label htmlFor="image" className="flex items-center gap-2 cursor-pointer text-sm font-medium">
-                      <div className="flex items-center justify-center w-8 h-8 bg-blue-500/20 rounded-lg">
-                        <Image className="w-4 h-4 text-blue-400" />
+                      <div className="flex items-center justify-center w-6 h-6 bg-blue-500/10 rounded-md">
+                        <Image className="w-3 h-3 text-blue-600" />
                       </div>
                       <span className="text-foreground">Images</span>
                     </Label>
                   </div>
                 </div>
                 <div className="group">
-                  <div className="flex items-center space-x-3 p-4 rounded-xl border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-smooth cursor-pointer">
+                  <div className="flex items-center space-x-2 p-3 rounded-md border border-border hover:border-primary/50 hover:bg-primary/5 transition-smooth cursor-pointer">
                     <RadioGroupItem value="video" id="video" className="w-4 h-4" />
                     <Label htmlFor="video" className="flex items-center gap-2 cursor-pointer text-sm font-medium">
-                      <div className="flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-lg">
-                        <Video className="w-4 h-4 text-red-400" />
+                      <div className="flex items-center justify-center w-6 h-6 bg-red-500/10 rounded-md">
+                        <Video className="w-3 h-3 text-red-600" />
                       </div>
                       <span className="text-foreground">Videos</span>
                     </Label>
@@ -154,17 +154,17 @@ export const URLGeneratorForm = ({ onContentGenerated }: URLGeneratorFormProps) 
 
             <Button
               type="submit"
-              className="w-full h-14 bg-gradient-accent text-accent-foreground font-bold text-base rounded-xl shadow-glow hover:shadow-button transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm rounded-md transition-smooth disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin mr-3" />
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
                   Generating...
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5 mr-3" />
+                  <Sparkles className="w-4 h-4 mr-2" />
                   Generate Content
                 </>
               )}

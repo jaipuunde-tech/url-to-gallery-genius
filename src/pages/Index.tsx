@@ -14,16 +14,25 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-background text-foreground">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+      <nav className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="text-2xl font-bold bg-gradient-accent bg-clip-text text-transparent">
-              DIGITAL CREATORS
+            <div className="text-xl font-bold text-foreground">
+              URL TO POST
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth">Gallery</a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth">Generate</a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth">About</a>
+              <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Build</a>
+              <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Sell</a>
+              <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Use Cases</a>
+              <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Resources</a>
+              <div className="flex items-center space-x-3">
+                <Button variant="ghost" size="sm" className="text-sm font-medium">
+                  Login
+                </Button>
+                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-4">
+                  Signup
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -32,43 +41,57 @@ const Index = () => {
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-20">
         <div className="absolute inset-0 bg-gradient-hero" />
-        <div className="relative container mx-auto px-6 py-24">
+        <div className="relative container mx-auto px-6 py-20">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left Content */}
-              <div className="space-y-12">
-                <div className="space-y-8">
-                  <div className="space-y-6">
-                    <h1 className="text-7xl md:text-8xl lg:text-9xl font-black leading-none">
-                      <span className="block text-foreground">DIGITAL</span>
-                      <span className="block bg-gradient-accent bg-clip-text text-transparent">CREATORS</span>
-                    </h1>
-                    <div className="flex items-center gap-4 text-4xl md:text-5xl font-bold">
-                      <span className="bg-gradient-accent bg-clip-text text-transparent">AI STUDIO</span>
-                      <ArrowRight className="w-8 h-8 text-primary" />
-                    </div>
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full border border-primary/20">
+                    <span className="w-2 h-2 bg-primary rounded-full"></span>
+                    #1 AI MEDIA MAKER PLATFORM
                   </div>
                   
-                  <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl leading-relaxed">
-                    Transform any URL into stunning visual content with the power of artificial intelligence
-                  </p>
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-foreground">
+                    Turn URL into Engaging Media for Your Business
+
+                  </h1>
+                  
+                  <div className="space-y-4 text-lg text-muted-foreground max-w-2xl">
+                    <div className="flex items-start gap-3">
+                      <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center mt-0.5">
+                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      </div>
+                      <span>Instantly transform links into videos, images, or interactive content</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center mt-0.5">
+                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      </div>
+                      <span>Generate new leads and collect data from within a conversation</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center mt-0.5">
+                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      </div>
+                      <span>Integrate AI into your website or any part of your business</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4">
                   <Button 
                     size="lg" 
-                    className="h-16 px-8 bg-gradient-accent text-accent-foreground font-bold text-lg rounded-2xl shadow-glow hover:shadow-button transition-all duration-300 hover:scale-105"
+                    className="h-12 px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-sm rounded-lg transition-smooth"
                   >
-                    <Sparkles className="w-6 h-6 mr-3" />
-                    Start Creating
+                    Start Building - It's Free
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="h-16 px-8 border-2 border-primary/30 text-foreground hover:bg-primary/10 font-semibold text-lg rounded-2xl"
-                  >
-                    View Gallery
-                  </Button>
+                  <div className="text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <span className="w-1 h-1 bg-orange-500 rounded-full"></span>
+                      Start building for free! No coding required • Takes 5 min or less
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -91,13 +114,13 @@ const Index = () => {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border/30 bg-card/30 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-12">
-          <div className="text-center space-y-4">
-            <div className="text-2xl font-bold bg-gradient-accent bg-clip-text text-transparent">
-              DIGITAL CREATORS
+      <footer className="border-t border-border bg-background">
+        <div className="container mx-auto px-6 py-8">
+          <div className="text-center space-y-2">
+            <div className="text-lg font-semibold text-foreground">
+              URL Gallery Genius
             </div>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Powered by advanced AI technology
             </p>
           </div>

@@ -1,16 +1,12 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card } from "@/components/ui/card";
-import { FileText, Video, Image, Play, ExternalLink } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { ExternalLink } from "lucide-react";
 
 interface ContentItem {
   id: string;
   name: string;
-  type: "image" | "video" | "text";
   url: string;
-  thumbnailUrl?: string;
-  createdAt: string;
+  type: "video" | "image";
 }
 
 interface ContentGalleryProps {
@@ -19,158 +15,203 @@ interface ContentGalleryProps {
 
 export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
   const [content, setContent] = useState<ContentItem[]>([]);
+  const [previousCount, setPreviousCount] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const POLLING_INTERVAL = 10000; // Check every 10 seconds
 
-  // Fetch media from Supabase storage bucket
+  // Fetch data from Google Sheets CSV
+  const fetchContentFromSheet = useCallback(async () => {
+    try {
+      const response = await fetch('https://docs.google.com/spreadsheets/d/1zkq7fkZqC0-vEUjojhCk_N9hWnqaNXcMKDMPUQ-F4_E/export?format=csv');
+      const csvText = await response.text();
+      
+      // Parse CSV data
+      const lines = csvText.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      
+      const linksIndex = headers.indexOf('links');
+      const nameIndex = headers.indexOf('name');
+      const typeIndex = headers.indexOf('type');
+      
+      if (linksIndex === -1 || nameIndex === -1 || typeIndex === -1) {
+        console.error('Required columns (links, name, type) not found in CSV');
+        return;
+      }
+      
+      const contentItems: ContentItem[] = lines.slice(1)
+        .filter(line => line.trim()) // Remove empty lines
+        .map((line, index) => {
+          const columns = line.split(',').map(col => col.trim().replace(/"/g, ''));
+          const type = columns[typeIndex]?.toLowerCase();
+          return {
+            id: `item-${index}`,
+            name: columns[nameIndex] || `Item ${index + 1}`,
+            url: columns[linksIndex] || '',
+            type: (type === 'video' || type === 'image') ? type as "video" | "image" : 'image'
+          };
+        })
+        .filter(item => item.url); // Only include items with valid URLs
+      
+      // Check if new items were added
+      if (contentItems.length > previousCount && previousCount > 0) {
+        console.log(`New items detected: ${contentItems.length - previousCount} new items added`);
+      }
+      
+      setContent(contentItems.reverse());
+      setPreviousCount(contentItems.length);
+    } catch (error) {
+      console.error('Error fetching content from Google Sheets:', error);
+    }
+  }, [previousCount]);
+
+  // Initial fetch and manual refresh trigger
   useEffect(() => {
-    const fetchMedia = async () => {
-      try {
-        const { data: files, error } = await supabase.storage
-          .from('media')
-          .list('', {
-            limit: 100,
-            sortBy: { column: 'created_at', order: 'desc' }
-          });
+    fetchContentFromSheet();
+  }, [refreshTrigger, fetchContentFromSheet]);
 
-        if (error) {
-          console.error('Error fetching media:', error);
-          return;
-        }
+  // Auto-refresh polling
+  useEffect(() => {
+    // Start polling after initial load
+    if (content.length > 0) {
+      intervalRef.current = setInterval(() => {
+        fetchContentFromSheet();
+      }, POLLING_INTERVAL);
+    }
 
-        const mediaItems: ContentItem[] = files
-          .filter(file => file.name !== '.emptyFolderPlaceholder') // Filter out placeholder files
-          .map(file => {
-            const fileExtension = file.name.split('.').pop()?.toLowerCase();
-            const isVideo = ['mp4', 'mov', 'avi', 'webm', 'mkv'].includes(fileExtension || '');
-            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(fileExtension || '');
-            
-            const { data: { publicUrl } } = supabase.storage
-              .from('media')
-              .getPublicUrl(file.name);
-
-            return {
-              id: file.id || file.name,
-              name: file.name.split('.')[0], // Remove file extension for display
-              type: isVideo ? 'video' as const : isImage ? 'image' as const : 'text' as const,
-              url: publicUrl,
-              thumbnailUrl: publicUrl, // For images, use the same URL. For videos, you might want to generate thumbnails
-              createdAt: file.created_at || new Date().toISOString()
-            };
-          });
-
-        setContent(mediaItems);
-      } catch (error) {
-        console.error('Error fetching media:', error);
+    // Cleanup interval on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
+  }, [content.length, fetchContentFromSheet]);
 
-    fetchMedia();
-  }, [refreshTrigger]);
-
-  const getItemIcon = (type: string) => {
-    switch (type) {
-      case "video":
-        return <Video className="w-4 h-4" />;
-      case "image":
-        return <Image className="w-4 h-4" />;
-      default:
-        return <FileText className="w-4 h-4" />;
-    }
+  const isEmbeddableUrl = (url: string) => {
+    return url.includes('youtube.com') || url.includes('youtu.be') || 
+           url.includes('vimeo.com') || url.includes('instagram.com') ||
+           url.includes('twitter.com') || url.includes('x.com') ||
+           url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
   };
 
-  const getItemColor = (type: string) => {
-    switch (type) {
-      case "video":
-        return "bg-red-500/20 text-red-400 border-red-500/30";
-      case "image":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-      default:
-        return "bg-green-500/20 text-green-400 border-green-500/30";
+  const getEmbedContent = (url: string, type: "video" | "image") => {
+    // YouTube embed - use embed URL for better integration
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const videoId = url.includes('youtu.be') 
+        ? url.split('youtu.be/')[1]?.split('?')[0]
+        : url.split('v=')[1]?.split('&')[0];
+      if (videoId) {
+        return (
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=0&mute=1`}
+            className="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="YouTube video"
+            loading="lazy"
+          />
+        );
+      }
     }
+    
+    // Vimeo embed
+    if (url.includes('vimeo.com')) {
+      const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
+      if (videoId) {
+        return (
+          <iframe
+            src={`https://player.vimeo.com/video/${videoId}?autoplay=0&muted=1`}
+            className="w-full h-full border-0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            title="Vimeo video"
+            loading="lazy"
+          />
+        );
+      }
+    }
+    
+    // Direct image URLs
+    if (url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+      return (
+        <img 
+          src={url} 
+          alt="Content"
+          className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
+          onError={(e) => {
+            const target = e.currentTarget;
+            target.style.display = 'none';
+            const fallback = document.createElement('div');
+            fallback.className = 'w-full h-full flex items-center justify-center bg-gradient-to-br from-red-500/20 to-orange-500/20';
+            fallback.innerHTML = '<div class="text-center space-y-2"><svg class="w-8 h-8 text-red-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg><p class="text-xs text-red-400 font-medium">Image Failed</p></div>';
+            target.parentElement?.appendChild(fallback);
+          }}
+          loading="lazy"
+        />
+      );
+    }
+    
+    // For all other URLs - embed the full website
+    return (
+      <iframe
+        src={url}
+        className="w-full h-full border-0"
+        title={`Embedded content from ${new URL(url).hostname}`}
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        loading="lazy"
+        onError={(e) => {
+          const target = e.currentTarget;
+          target.style.display = 'none';
+          const fallback = document.createElement('div');
+          fallback.className = 'w-full h-full flex items-center justify-center bg-gradient-to-br from-muted/20 to-muted/40';
+          fallback.innerHTML = '<div class="text-center space-y-2"><svg class="w-8 h-8 text-muted-foreground mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.1m0 0l4-4a4 4 0 105.656-5.656l-1.1 1.102m-2.598-2.598l4 4"></path></svg><p class="text-xs text-muted-foreground font-medium">Website Preview</p></div>';
+          target.parentElement?.appendChild(fallback);
+        }}
+      />
+    );
   };
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12">
       {/* Gallery Header */}
       <div className="text-center space-y-6">
         <div className="space-y-4">
-          <h2 className="text-5xl md:text-6xl font-black">
-            <span className="block text-foreground">CREATIVE</span>
-            <span className="block bg-gradient-accent bg-clip-text text-transparent">GALLERY</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+            Content Gallery
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Explore AI-generated masterpieces from creators worldwide
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Explore AI-generated content from URLs across the web
           </p>
         </div>
-        <div className="inline-flex items-center gap-3 px-6 py-3 bg-card/50 backdrop-blur-sm rounded-full border border-border/30">
-          <span className="text-2xl font-bold bg-gradient-accent bg-clip-text text-transparent">
+        <div className="inline-flex items-center gap-3 px-4 py-2 bg-muted rounded-lg border border-border">
+          <span className="text-lg font-semibold text-primary">
             {content.length}
           </span>
-          <span className="text-muted-foreground font-medium">Creative Works</span>
+          <span className="text-muted-foreground text-sm font-medium">Generated Items</span>
         </div>
       </div>
 
       {/* Gallery Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {content.map((item) => (
           <Card 
             key={item.id} 
-            className="group overflow-hidden bg-card/50 backdrop-blur-sm shadow-card hover:shadow-premium border border-border/30 hover:border-primary/30 transition-all duration-500 cursor-pointer transform hover:scale-105 rounded-2xl"
+            className="group overflow-hidden bg-card shadow-card hover:shadow-card-hover border border-border hover:border-primary/20 transition-all duration-300 rounded-lg"
           >
-            {/* Thumbnail */}
-            <div className="relative aspect-[4/3] bg-muted/10 overflow-hidden">
-              {item.thumbnailUrl ? (
-                <img 
-                  src={item.thumbnailUrl} 
-                  alt={item.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted/20 to-muted/40">
-                  {getItemIcon(item.type)}
-                </div>
-              )}
+            {/* Embedded Content */}
+            <div className={`relative bg-muted/30 overflow-hidden ${
+              item.type === 'video' ? 'aspect-[9/16]' : 'aspect-square'
+            }`}>
+              {getEmbedContent(item.url, item.type)}
               
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+              {/* Overlay - only show on non-iframe content */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
               
-              {/* Type Badge */}
-              <div className="absolute top-4 left-4">
-                <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border backdrop-blur-sm ${getItemColor(item.type)}`}>
-                  {getItemIcon(item.type)}
-                  {item.type === "image" ? "IMAGE" : item.type === "video" ? "VIDEO" : "TEXT"}
-                </span>
-              </div>
-
-              {/* Play Button for Videos */}
-              {item.type === "video" && (
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                  <div className="w-20 h-20 bg-primary/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-glow border-2 border-primary/30">
-                    <Play className="w-8 h-8 text-primary-foreground ml-1" />
-                  </div>
-                </div>
-              )}
-
               {/* External Link Icon */}
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                <div className="w-8 h-8 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <ExternalLink className="w-4 h-4 text-white" />
-                </div>
-              </div>
+              
             </div>
 
-            {/* Content Info */}
-            <div className="p-6 space-y-3">
-              <h3 className="font-bold text-lg line-clamp-2 group-hover:text-primary transition-smooth text-foreground">
-                {item.name}
-              </h3>
-              <p className="text-sm text-muted-foreground font-medium">
-                {new Date(item.createdAt).toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}
-              </p>
-            </div>
+            
           </Card>
         ))}
       </div>
