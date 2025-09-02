@@ -18,7 +18,7 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="text-xl font-bold text-foreground">
-              URLSSSS TO POSTsssssss in just seconds
+              URL to Social Media
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Build</a>
@@ -49,12 +49,12 @@ const Index = () => {
                 <div className="space-y-6">
                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full border border-primary/20">
                     <span className="w-2 h-2 bg-primary rounded-full"></span>
-                    #1 AI MEDIA MAKER PLATFORM
+                    #1 URL-TO-SOCIAL PLATFORM
                   </div>
                   
                   <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-foreground">
-                    Turn URL into Engaging Media for Your Business
-
+                    Transform Any Website into
+                    <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent"> Viral Social Media Content</span>
                   </h1>
                   
                   <div className="space-y-4 text-lg text-muted-foreground max-w-2xl">
@@ -62,19 +62,19 @@ const Index = () => {
                       <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center mt-0.5">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
                       </div>
-                      <span>Instantly transform links into videos, images, or interactive content</span>
+                      <span>Turn any website URL into engaging social media posts, stories, and videos</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center mt-0.5">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
                       </div>
-                      <span>Generate new leads and collect data from within a conversation</span>
+                      <span>Create scroll-stopping content that drives engagement and clicks</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center mt-0.5">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
                       </div>
-                      <span>Integrate AI into your website or any part of your business</span>
+                      <span>Perfect for marketers, creators, and businesses looking to amplify their reach</span>
                     </div>
                   </div>
                 </div>
@@ -84,12 +84,12 @@ const Index = () => {
                     size="lg" 
                     className="h-12 px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-sm rounded-lg transition-smooth"
                   >
-                    Start Building - It's Free
+                    Create Your First Post - Free
                   </Button>
                   <div className="text-sm text-muted-foreground">
                     <span className="inline-flex items-center gap-1">
                       <span className="w-1 h-1 bg-orange-500 rounded-full"></span>
-                      Start building for free! No coding required • Takes 5 min or less
+                      Generate stunning social content in seconds • No design skills needed
                     </span>
                   </div>
                 </div>
