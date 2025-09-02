@@ -18,7 +18,7 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="text-xl font-bold text-foreground">
-              URL TO POST
+              URLSSSS TO POST
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Build</a>
