@@ -171,6 +171,44 @@ export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
     );
   };
 
+  // Separate content by type
+  const images = content.filter(item => item.type === 'image');
+  const videos = content.filter(item => item.type === 'video');
+
+  const renderContentGrid = (items: ContentItem[], title: string) => (
+    <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-2xl font-bold text-foreground mb-2">{title}</h3>
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-md border border-border">
+          <span className="text-sm font-semibold text-primary">{items.length}</span>
+          <span className="text-muted-foreground text-xs">items</span>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {items.map((item) => (
+          <Card 
+            key={item.id} 
+            className="group overflow-hidden bg-card shadow-card hover:shadow-card-hover border border-border hover:border-primary/20 transition-all duration-300 rounded-lg"
+          >
+            {/* Embedded Content */}
+            <div className={`relative bg-muted/30 overflow-hidden ${
+              item.type === 'video' ? 'aspect-[9/16]' : 'aspect-square'
+            }`}>
+              {getEmbedContent(item.url, item.type)}
+              
+              {/* Overlay - only show on non-iframe content */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
+              
+              {/* External Link Icon */}
+              
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-12">
       {/* Gallery Header */}
@@ -191,29 +229,17 @@ export const ContentGallery = ({ refreshTrigger }: ContentGalleryProps) => {
         </div>
       </div>
 
-      {/* Gallery Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {content.map((item) => (
-          <Card 
-            key={item.id} 
-            className="group overflow-hidden bg-card shadow-card hover:shadow-card-hover border border-border hover:border-primary/20 transition-all duration-300 rounded-lg"
-          >
-            {/* Embedded Content */}
-            <div className={`relative bg-muted/30 overflow-hidden ${
-              item.type === 'video' ? 'aspect-[9/16]' : 'aspect-square'
-            }`}>
-              {getEmbedContent(item.url, item.type)}
-              
-              {/* Overlay - only show on non-iframe content */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
-              
-              {/* External Link Icon */}
-              
-            </div>
-
-            
-          </Card>
-        ))}
+      {/* Partitioned Gallery - Images Left, Videos Right */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Images Section - Left Side */}
+        <div className="space-y-6">
+          {renderContentGrid(images, "Images")}
+        </div>
+        
+        {/* Videos Section - Right Side */}
+        <div className="space-y-6">
+          {renderContentGrid(videos, "Videos")}
+        </div>
       </div>
     </div>
   );
