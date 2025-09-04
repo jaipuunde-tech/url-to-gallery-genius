@@ -21,10 +21,6 @@ const Index = () => {
               URL to Social Media
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Build</a>
-              <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Sell</a>
-              <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Use Cases</a>
-              <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">Resources</a>
               <div className="flex items-center space-x-3">
                 <Button variant="ghost" size="sm" className="text-sm font-medium">
                   Login
@@ -79,20 +75,6 @@ const Index = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <Button 
-                    size="lg" 
-                    className="h-12 px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-sm rounded-lg transition-smooth"
-                  >
-                    Create Your First Post - Free
-                  </Button>
-                  <div className="text-sm text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <span className="w-1 h-1 bg-orange-500 rounded-full"></span>
-                      Generate stunning social content in seconds • No design skills needed
-                    </span>
-                  </div>
-                </div>
               </div>
 
               {/* Right Content - Generator Form */}
